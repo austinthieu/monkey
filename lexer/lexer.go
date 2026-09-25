@@ -17,6 +17,7 @@ func New(input string) *Lexer {
 	return lexer
 }
 
+// readChar reads the current character at position then advances the lexer
 func (lexer *Lexer) readChar() {
 	if lexer.readPosition >= len(lexer.input) {
 		lexer.char = 0
@@ -28,11 +29,13 @@ func (lexer *Lexer) readChar() {
 	lexer.readPosition += 1
 }
 
+// NextToken returns the next token in the input and advances the lexer past it.
 func (lexer *Lexer) NextToken() token.Token {
 	var tok token.Token
 
 	lexer.skipWhitespace()
 
+	// Assign token to appropriate TokenType
 	switch lexer.char {
 	case '=':
 		tok = newToken(token.ASSIGN, lexer.char)
@@ -46,6 +49,18 @@ func (lexer *Lexer) NextToken() token.Token {
 		tok = newToken(token.COMMA, lexer.char)
 	case '+':
 		tok = newToken(token.PLUS, lexer.char)
+	case '-':
+		tok = newToken(token.MINUS, lexer.char)
+	case '!':
+		tok = newToken(token.BANG, lexer.char)
+	case '*':
+		tok = newToken(token.ASTERISK, lexer.char)
+	case '/':
+		tok = newToken(token.SLASH, lexer.char)
+	case '<':
+		tok = newToken(token.LT, lexer.char)
+	case '>':
+		tok = newToken(token.GT, lexer.char)
 	case '{':
 		tok = newToken(token.LBRACE, lexer.char)
 	case '}':
