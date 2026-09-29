@@ -29,6 +29,15 @@ func (lexer *Lexer) readChar() {
 	lexer.readPosition += 1
 }
 
+// peekChar
+func (lexer *Lexer) peekChar() byte {
+	if lexer.readPosition >= len(lexer.input) {
+		return 0
+	} else {
+		return lexer.input[lexer.readPosition]
+	}
+}
+
 // NextToken returns the next token in the input and advances the lexer past it.
 func (lexer *Lexer) NextToken() token.Token {
 	var tok token.Token
@@ -38,7 +47,15 @@ func (lexer *Lexer) NextToken() token.Token {
 	// Assign token to appropriate TokenType
 	switch lexer.char {
 	case '=':
-		tok = newToken(token.ASSIGN, lexer.char)
+		// We peek ahead to determine if there this is an EQ token or a normal assignment token
+		// could abstract this logic into a different function called 'makeTwoCharToken'
+		if lexer.peekChar() == '=' {
+			ch := lexer.char
+			lexer.readChar()
+			tok = token.Token{Type: token.EQ, Literal: string(ch) + string(lexer.char)}
+		} else {
+			tok = newToken(token.ASSIGN, lexer.char)
+		}
 	case ';':
 		tok = newToken(token.SEMICOLON, lexer.char)
 	case '(':
@@ -52,7 +69,14 @@ func (lexer *Lexer) NextToken() token.Token {
 	case '-':
 		tok = newToken(token.MINUS, lexer.char)
 	case '!':
-		tok = newToken(token.BANG, lexer.char)
+		// We peek ahead to determine if this is a NOT_EQ token or a normal BANG token
+		if lexer.peekChar() == '=' {
+			ch := lexer.char
+			lexer.readChar()
+			tok = token.Token{Type: token.NOT_EQ, Literal: string(ch) + string(lexer.char)}
+		} else {
+			tok = newToken(token.BANG, lexer.char)
+		}
 	case '*':
 		tok = newToken(token.ASTERISK, lexer.char)
 	case '/':
@@ -106,8 +130,14 @@ func (lexer *Lexer) readNumber() string {
 	return lexer.input[position:lexer.position]
 }
 
+// Checks if the character is a digit
 func isDigit(ch byte) bool {
 	return '0' <= ch && ch <= '9'
+}
+
+// Checks if the character is a alphanumerical letter
+func isLetter(ch byte) bool {
+	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
 }
 
 // Reads an identifier and advances our lexer's positions until it encounters
@@ -120,10 +150,7 @@ func (lexer *Lexer) readIdentifier() string {
 	return lexer.input[position:lexer.position]
 }
 
-func isLetter(ch byte) bool {
-	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
-}
-
+// Creates a token and returns it
 func newToken(tokenType token.TokenType, char byte) token.Token {
 	return token.Token{Type: tokenType, Literal: string(char)}
 }
