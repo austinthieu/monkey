@@ -15,6 +15,8 @@ type Statement interface {
 	statementNode()
 }
 
+// Expression - a syntactic combination of variables, constants, operators and functions
+// that the system evaluates to produce a single value
 type Expression interface {
 	Node
 	expressionNode()
@@ -34,6 +36,7 @@ func (p *Program) TokenLiteral() string {
 	}
 }
 
+// LetStatement have an identifier and a value with an assignment between them
 type LetStatement struct {
 	Token token.Token // the token.LET token
 	Name  *Identifier
@@ -42,6 +45,15 @@ type LetStatement struct {
 
 func (ls *LetStatement) statementNode()       {}
 func (ls *LetStatement) TokenLiteral() string { return ls.Token.Literal }
+
+// ReturnStatement consist solely of the keyword 'return' and an expression
+type ReturnStatement struct {
+	Token       token.Token // the 'return' token
+	ReturnValue Expression
+}
+
+func (rs *ReturnStatement) statementNode()       {}
+func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal }
 
 type Identifier struct {
 	Token token.Token // the token.Ident token
