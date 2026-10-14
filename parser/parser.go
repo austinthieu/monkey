@@ -75,7 +75,7 @@ func (p *Parser) peekError(t token.TokenType) {
 }
 
 // nextToken moves both the curToken and peekToken forward 1 step.
-func (p *Parser) nextToken() {"
+func (p *Parser) nextToken() {
 	p.curToken = p.peekToken
 	p.peekToken = p.l.NextToken()
 }
