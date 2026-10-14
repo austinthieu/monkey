@@ -7,6 +7,7 @@ import (
 	"monkey/token"
 )
 
+// Node represents a single Node in out AST (Abstract Syntax Tree)
 type Node interface {
 	TokenLiteral() string
 	String() string
@@ -41,6 +42,7 @@ func (p *Program) TokenLiteral() string {
 	}
 }
 
+// String allows us print AST nodes for debugging and to compare them with other AST nodes.
 func (p *Program) String() string {
 	var out bytes.Buffer
 

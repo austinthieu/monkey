@@ -58,24 +58,30 @@ func New(l *lexer.Lexer) *Parser {
 	return p
 }
 
+// parseIdentifier returns an Identifier
 func (p *Parser) parseIdentifier() ast.Expression {
 	return &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 }
 
+// Errors returns parse errors
 func (p *Parser) Errors() []string {
 	return p.errors
 }
 
+// peekError is a helper function to help with testing
 func (p *Parser) peekError(t token.TokenType) {
 	msg := fmt.Sprintf("expected next token to be %s, got %s instead", t, p.peekToken.Type)
 	p.errors = append(p.errors, msg)
 }
 
-func (p *Parser) nextToken() {
+// nextToken moves both the curToken and peekToken forward 1 step.
+func (p *Parser) nextToken() {"
 	p.curToken = p.peekToken
 	p.peekToken = p.l.NextToken()
 }
 
+// ParseProgram first constructs the root node of the AST
+// Then iterates and calls parseStatement() over every token in the input until it reaches EOF token.
 func (p *Parser) ParseProgram() *ast.Program {
 	program := &ast.Program{} // our root node of the AST
 	program.Statements = []ast.Statement{}
@@ -91,6 +97,7 @@ func (p *Parser) ParseProgram() *ast.Program {
 	return program
 }
 
+// parseStatement is used to parse all Statements
 func (p *Parser) parseStatement() ast.Statement {
 	switch p.curToken.Type {
 	case token.LET:
@@ -180,14 +187,17 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	return leftExp
 }
 
+// curTokenIs returns the current token
 func (p *Parser) curTokenIs(t token.TokenType) bool {
 	return p.curToken.Type == t
 }
 
+// peekTokenIs returns the next token
 func (p *Parser) peekTokenIs(t token.TokenType) bool {
 	return p.peekToken.Type == t
 }
 
+// expectPeek checks if the next token is the given token in the parameter
 func (p *Parser) expectPeek(t token.TokenType) bool {
 	if p.peekTokenIs(t) {
 		p.nextToken()
@@ -198,10 +208,12 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 	return false
 }
 
+// registerPrefix registers a prefix function to the prefixParseFns map
 func (p *Parser) registerPrefix(tokenType token.TokenType, fn prefixParseFn) {
 	p.prefixParseFns[tokenType] = fn
 }
 
+// registerInfix registers an infix function to the InfixParseFns map
 func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
 	p.infixParseFns[tokenType] = fn
 }
